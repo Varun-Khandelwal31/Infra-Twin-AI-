@@ -6,6 +6,7 @@ import uvicorn
 import logging
 
 from pipeline import calculate_volumetric_metrics
+from rag_engine import generate_rag_boq
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("InfraTwinAI-API")
@@ -31,6 +32,13 @@ class VolumeRequest(BaseModel):
     drone_altitude_m: Optional[float] = 12.5
     camera_fov_deg: Optional[float] = 84.0
 
+class RAGBOQRequest(BaseModel):
+    volume_m3: float = 0.375
+    distress_area_sqm: Optional[float] = 2.5
+    max_depth_cm: Optional[float] = 15.0
+    road_name: Optional[str] = "Outer Ring Road Stretch"
+    prompt: Optional[str] = ""
+
 @app.get("/")
 def read_root():
     return {
@@ -38,7 +46,8 @@ def read_root():
         "status": "online",
         "segmentation_model": "YOLOv8-Seg (yolov8n-seg.pt)",
         "depth_estimation_model": "Depth Anything (LiheYoung/depth-anything-small-hf)",
-        "supported_irc_standards": ["IRC:82-2023", "IRC:37-2018", "MoRTH Section 3000"]
+        "rag_vector_db": "ChromaDB / LangChain IRC 83 & IRC 82 Knowledge Base",
+        "supported_irc_standards": ["IRC:83", "IRC:82-2023", "IRC:37-2018", "MoRTH Section 3000"]
     }
 
 @app.get("/health")
@@ -68,6 +77,25 @@ async def inspect_pothole_image(
         return result
     except Exception as e:
         logger.error(f"Inspection error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/v1/copilot/generate-boq")
+def generate_copilot_boq(req: RAGBOQRequest):
+    """
+    RAG BOQ Endpoint: Accepts volume (m³), area, depth, and road name,
+    queries IRC 83 vector store, and returns grounded Llama-3 BOQ.
+    """
+    try:
+        result = generate_rag_boq(
+            volume_m3=req.volume_m3,
+            distress_area_sqm=req.distress_area_sqm or 2.5,
+            max_depth_cm=req.max_depth_cm or 15.0,
+            road_name=req.road_name or "Outer Ring Road Stretch",
+            user_prompt=req.prompt or ""
+        )
+        return result
+    except Exception as e:
+        logger.error(f"RAG BOQ generation error: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/v1/compute-volume")
