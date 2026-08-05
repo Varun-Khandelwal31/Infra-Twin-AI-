@@ -34,3 +34,25 @@
 .animate-scanline {
   animation: scanline 1.2s ease-in-out infinite;
 }
+
+/* 3D Glassmorphism & Card Tilt Utilities */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.card-3d-tilt {
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+}
+
+.card-3d-tilt:hover {
+  transform: translateY(-4px) rotateX(2deg) rotateY(-2deg) scale(1.01);
+  box-shadow: 0 16px 32px -8px rgba(0, 217, 255, 0.25), 0 0 20px rgba(0, 217, 255, 0.2);
+}
+
+.shadow-3d-glow {
+  box-shadow: 0 12px 28px -6px rgba(0, 217, 255, 0.3), 0 0 15px rgba(0, 217, 255, 0.2);
+}
