@@ -25,6 +25,7 @@ const NAV_ITEMS = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { label: 'Map View', href: '/map', icon: MapPin },
   { label: 'AI Inspection', href: '/audit', icon: ScanEye },
+  { label: 'SLA Verification', href: '/sla-verification', icon: ShieldCheck },
   { label: 'Contractor SLA', href: '/fraud-detection', icon: ShieldCheck },
   { label: 'Nirman Copilot', href: '/copilot', icon: Bot },
   { label: 'Predictive Maint.', href: '/predictive', icon: TrendingUp },
