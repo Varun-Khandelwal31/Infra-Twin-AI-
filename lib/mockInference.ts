@@ -114,12 +114,27 @@ function generateDepthGrid(maxDepth: number): number[][] {
   return grid;
 }
 
-export function createCustomInspection(imageUrl: string, title?: string): InspectionData {
+export function createCustomInspection(imageUrl: string, title?: string, customMetrics?: Partial<InspectionMetrics>): InspectionData {
   const timestampStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ', ' + new Date().toLocaleDateString();
   const randomId = 'custom-' + Math.random().toString(36).substring(2, 7);
-  const randomDepth = Number((Math.random() * 12 + 6).toFixed(1));
-  const randomArea = Number((Math.random() * 3.5 + 1.2).toFixed(1));
-  const randomVol = Number(((randomArea * randomDepth) / 100).toFixed(3));
+  const randomDepth = customMetrics?.maxDepthCm ?? Number((Math.random() * 12 + 6).toFixed(1));
+  const randomArea = customMetrics?.areaSqm ?? Number((Math.random() * 3.5 + 1.2).toFixed(1));
+  const randomVol = customMetrics?.volumeCum ?? Number(((randomArea * randomDepth) / 100).toFixed(3));
+
+  const metrics: InspectionMetrics = {
+    areaSqm: randomArea,
+    areaTol: customMetrics?.areaTol ?? 0.12,
+    maxDepthCm: randomDepth,
+    maxDepthTol: customMetrics?.maxDepthTol ?? 1.1,
+    avgDepthCm: customMetrics?.avgDepthCm ?? Number((randomDepth * 0.6).toFixed(1)),
+    avgDepthTol: customMetrics?.avgDepthTol ?? 0.7,
+    volumeCum: randomVol,
+    volumeTol: customMetrics?.volumeTol ?? 0.04,
+    perimeterM: customMetrics?.perimeterM ?? Number((Math.sqrt(randomArea) * 4).toFixed(1)),
+    perimeterTol: customMetrics?.perimeterTol ?? 0.2,
+    severityIndex: customMetrics?.severityIndex ?? (randomDepth > 14 ? 'Critical' : randomDepth > 9 ? 'High' : 'Moderate'),
+    confidenceScore: customMetrics?.confidenceScore ?? Number((96.5 + Math.random() * 3).toFixed(1)),
+  };
 
   return {
     id: randomId,
@@ -127,20 +142,7 @@ export function createCustomInspection(imageUrl: string, title?: string): Inspec
     timestamp: timestampStr,
     roadName: title || 'User Uploaded Road Inspection Scan',
     distressType: 'AI Detected Asphalt Pothole & Distress Void',
-    metrics: {
-      areaSqm: randomArea,
-      areaTol: 0.12,
-      maxDepthCm: randomDepth,
-      maxDepthTol: 1.1,
-      avgDepthCm: Number((randomDepth * 0.6).toFixed(1)),
-      avgDepthTol: 0.7,
-      volumeCum: randomVol,
-      volumeTol: 0.04,
-      perimeterM: Number((Math.sqrt(randomArea) * 4).toFixed(1)),
-      perimeterTol: 0.2,
-      severityIndex: randomDepth > 14 ? 'Critical' : randomDepth > 9 ? 'High' : 'Moderate',
-      confidenceScore: Number((96.5 + Math.random() * 3).toFixed(1)),
-    },
+    metrics: metrics,
     location: {
       address: 'Uploaded Drone Scan Location (GPS Tagged)',
       lat: 28.6139,
