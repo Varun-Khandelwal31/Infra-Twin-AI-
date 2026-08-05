@@ -52,8 +52,138 @@ function parseGeoJSONFeatures(geojson: any): RoadFeature[] {
   }));
 }
 
+export interface ScannedPotholePin {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+  city: 'Delhi' | 'Pune';
+  color: 'green' | 'yellow' | 'red';
+  status: 'Good' | 'Fair' | 'Critical';
+  severity: 'Low' | 'Moderate' | 'High' | 'Critical';
+  areaSqm: number;
+  maxDepthCm: number;
+  volumeCum: number;
+  sampleId: string;
+}
+
+const SCANNED_PINS: ScannedPotholePin[] = [
+  {
+    id: 'pin-1',
+    name: 'Connaught Place Outer Circle',
+    lat: 28.6330,
+    lng: 77.2140,
+    city: 'Delhi',
+    color: 'yellow',
+    status: 'Fair',
+    severity: 'Moderate',
+    areaSqm: 1.8,
+    maxDepthCm: 8.5,
+    volumeCum: 0.153,
+    sampleId: 'sample-1',
+  },
+  {
+    id: 'pin-2',
+    name: 'Barakhamba Road Flyover',
+    lat: 28.6290,
+    lng: 77.2260,
+    city: 'Delhi',
+    color: 'red',
+    status: 'Critical',
+    severity: 'Critical',
+    areaSqm: 4.2,
+    maxDepthCm: 18.5,
+    volumeCum: 0.777,
+    sampleId: 'sample-2',
+  },
+  {
+    id: 'pin-3',
+    name: 'Janpath Metro Station',
+    lat: 28.6180,
+    lng: 77.2180,
+    city: 'Delhi',
+    color: 'green',
+    status: 'Good',
+    severity: 'Low',
+    areaSqm: 0.6,
+    maxDepthCm: 3.2,
+    volumeCum: 0.019,
+    sampleId: 'sample-3',
+  },
+  {
+    id: 'pin-4',
+    name: 'Outer Ring Road (IIT Flyover)',
+    lat: 28.5480,
+    lng: 77.1850,
+    city: 'Delhi',
+    color: 'red',
+    status: 'Critical',
+    severity: 'Critical',
+    areaSqm: 3.5,
+    maxDepthCm: 16.0,
+    volumeCum: 0.560,
+    sampleId: 'sample-1',
+  },
+  {
+    id: 'pin-5',
+    name: 'Koregaon Park Main Road',
+    lat: 18.5362,
+    lng: 73.8940,
+    city: 'Pune',
+    color: 'yellow',
+    status: 'Fair',
+    severity: 'Moderate',
+    areaSqm: 2.1,
+    maxDepthCm: 9.0,
+    volumeCum: 0.189,
+    sampleId: 'sample-2',
+  },
+  {
+    id: 'pin-6',
+    name: 'FC Road Deccan Gymkhana',
+    lat: 18.5186,
+    lng: 73.8415,
+    city: 'Pune',
+    color: 'red',
+    status: 'Critical',
+    severity: 'Critical',
+    areaSqm: 5.1,
+    maxDepthCm: 22.0,
+    volumeCum: 1.122,
+    sampleId: 'sample-1',
+  },
+  {
+    id: 'pin-7',
+    name: 'Viman Nagar Expressway',
+    lat: 18.5679,
+    lng: 73.9143,
+    city: 'Pune',
+    color: 'green',
+    status: 'Good',
+    severity: 'Low',
+    areaSqm: 0.8,
+    maxDepthCm: 4.1,
+    volumeCum: 0.033,
+    sampleId: 'sample-3',
+  },
+  {
+    id: 'pin-8',
+    name: 'Baner High Street Junction',
+    lat: 18.5590,
+    lng: 73.7868,
+    city: 'Pune',
+    color: 'red',
+    status: 'Critical',
+    severity: 'High',
+    areaSqm: 3.8,
+    maxDepthCm: 14.5,
+    volumeCum: 0.551,
+    sampleId: 'sample-2',
+  },
+];
+
 const MAP_STYLES = [
-  { id: 'dark', label: 'OpenStreetMap Dark (SaaS)', url: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json' },
+  { id: 'dark', label: 'Mapbox / OpenStreetMap Dark', url: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json' },
   { id: 'osm', label: 'OpenStreetMap Standard', url: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json' },
   { id: 'light', label: 'OpenStreetMap Light', url: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json' },
 ];
@@ -61,6 +191,7 @@ const MAP_STYLES = [
 export default function SpatialMap() {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
+  const activePopupRef = useRef<maplibregl.Popup | null>(null);
 
   const [roads, setRoads] = useState<RoadFeature[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -68,6 +199,7 @@ export default function SpatialMap() {
 
   const [selectedMonthIdx, setSelectedMonthIdx] = useState(5); // June
   const [selectedRoad, setSelectedRoad] = useState<RoadFeature | null>(null);
+  const [currentCity, setCurrentCity] = useState<'Delhi' | 'Pune'>('Delhi');
   const [currentStyle, setCurrentStyle] = useState('dark');
 
   // Fetch roads GeoJSON on mount
@@ -119,7 +251,7 @@ export default function SpatialMap() {
     };
   };
 
-  const addMapLayers = (map: maplibregl.Map, monthIdx: number, roadList: RoadFeature[]) => {
+  const addMapLayersAndMarkers = (map: maplibregl.Map, monthIdx: number, roadList: RoadFeature[]) => {
     if (!map.getSource('roads-source')) {
       map.addSource('roads-source', {
         type: 'geojson',
@@ -171,35 +303,102 @@ export default function SpatialMap() {
           'line-width': 5,
         },
       });
-
-      map.on('click', 'roads-line', (e) => {
-        if (!e.features || !e.features[0]) return;
-        const clickedId = e.features[0].properties?.id;
-        const found = roadList.find((r) => r.id === clickedId);
-        if (found) {
-          setSelectedRoad(found);
-        }
-      });
-
-      map.on('mouseenter', 'roads-line', () => {
-        map.getCanvas().style.cursor = 'pointer';
-      });
-
-      map.on('mouseleave', 'roads-line', () => {
-        map.getCanvas().style.cursor = '';
-      });
     }
+
+    // Add Red/Yellow/Green Scanned Pothole Pins with Interactive Popups
+    SCANNED_PINS.forEach((pin) => {
+      const el = document.createElement('div');
+      el.className = 'custom-map-pin cursor-pointer transition-transform transform hover:scale-125';
+      
+      let badgeBg = '#10b981';
+      let borderGlow = '0 0 12px rgba(16, 185, 129, 0.8)';
+      if (pin.color === 'red') {
+        badgeBg = '#ef4444';
+        borderGlow = '0 0 14px rgba(239, 68, 68, 0.9)';
+      } else if (pin.color === 'yellow') {
+        badgeBg = '#f59e0b';
+        borderGlow = '0 0 12px rgba(245, 158, 11, 0.8)';
+      }
+
+      el.innerHTML = `
+        <div style="
+          width: 22px;
+          height: 22px;
+          border-radius: 50%;
+          background: ${badgeBg};
+          border: 2px solid #ffffff;
+          box-shadow: ${borderGlow};
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #000;
+          font-weight: bold;
+          font-size: 11px;
+        ">📍</div>
+      `;
+
+      el.addEventListener('click', () => {
+        if (activePopupRef.current) {
+          activePopupRef.current.remove();
+        }
+
+        const isRed = pin.color === 'red';
+        const popupNode = document.createElement('div');
+        popupNode.className = 'p-3 text-slate-100 font-sans max-w-xs';
+        popupNode.innerHTML = `
+          <div style="background: #090d16; border: 1px solid ${isRed ? 'rgba(239,68,68,0.4)' : 'rgba(0,217,255,0.3)'}; padding: 12px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.8);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <span style="font-weight: bold; font-size: 12px; color: #fff;">${pin.name}</span>
+              <span style="background: ${isRed ? 'rgba(239,68,68,0.2)' : 'rgba(16,185,129,0.2)'}; color: ${isRed ? '#f87171' : '#34d399'}; border: 1px solid ${isRed ? 'rgba(239,68,68,0.4)' : 'rgba(16,185,129,0.4)'}; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px;">
+                ${pin.status} (${pin.severity})
+              </span>
+            </div>
+            
+            <div style="font-family: monospace; font-size: 11px; background: rgba(15,23,42,0.8); border: 1px solid rgba(51,65,85,0.6); padding: 8px; border-radius: 8px; margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span style="color: #94a3b8;">Distress Area:</span>
+                <strong style="color: #f1f5f9;">${pin.areaSqm} m²</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span style="color: #94a3b8;">Max Depth:</span>
+                <strong style="color: ${isRed ? '#f87171' : '#fbbf24'};">${pin.maxDepthCm} cm</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: #94a3b8;">Calculated Volume:</span>
+                <strong style="color: #38bdf8;">${pin.volumeCum} m³</strong>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 6px;">
+              <a href="/audit?sample=${pin.sampleId}" style="flex: 1; background: #0f172a; border: 1px solid #334155; color: #38bdf8; text-align: center; padding: 6px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">AI Inspection</a>
+              <a href="/copilot?sample=${pin.sampleId}" style="flex: 1; background: linear-gradient(to right, #06b6d4, #2563eb); color: #090d16; text-align: center; padding: 6px; border-radius: 6px; font-size: 10px; font-weight: bold; text-decoration: none;">Generate BOQ</a>
+            </div>
+          </div>
+        `;
+
+        const popup = new maplibregl.Popup({ offset: 25, closeButton: true })
+          .setLngLat([pin.lng, pin.lat])
+          .setDOMContent(popupNode)
+          .addTo(map);
+
+        activePopupRef.current = popup;
+      });
+
+      new maplibregl.Marker(el)
+        .setLngLat([pin.lng, pin.lat])
+        .addTo(map);
+    });
   };
 
-  // Initialize MapLibre GL map
+  // Initialize MapLibre GL / Mapbox Dark map
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current || loading || roads.length === 0) return;
 
     const map = new maplibregl.Map({
       container: mapContainerRef.current,
       style: MAP_STYLES[0].url,
-      center: [77.2167, 28.6315],
-      zoom: 12,
+      center: currentCity === 'Delhi' ? [77.2167, 28.6315] : [73.8567, 18.5204],
+      zoom: currentCity === 'Delhi' ? 12 : 12.5,
       pitch: 45,
       bearing: -15,
     });
@@ -207,7 +406,7 @@ export default function SpatialMap() {
     map.addControl(new maplibregl.NavigationControl(), 'top-right');
 
     map.on('load', () => {
-      addMapLayers(map, selectedMonthIdx, roads);
+      addMapLayersAndMarkers(map, selectedMonthIdx, roads);
     });
 
     mapRef.current = map;
@@ -217,6 +416,20 @@ export default function SpatialMap() {
       mapRef.current = null;
     };
   }, [loading, roads]);
+
+  // Fly to city center on toggle
+  const handleCitySwitch = (city: 'Delhi' | 'Pune') => {
+    setCurrentCity(city);
+    if (mapRef.current) {
+      const center: [number, number] = city === 'Delhi' ? [77.2167, 28.6315] : [73.8567, 18.5204];
+      mapRef.current.flyTo({
+        center,
+        zoom: city === 'Delhi' ? 12 : 12.5,
+        pitch: 50,
+        duration: 1800,
+      });
+    }
+  };
 
   // Update map source on temporal slider month change or roads update
   useEffect(() => {
@@ -237,7 +450,7 @@ export default function SpatialMap() {
     const map = mapRef.current;
     map.setStyle(styleObj.url);
     map.once('style.load', () => {
-      addMapLayers(map, selectedMonthIdx, roads);
+      addMapLayersAndMarkers(map, selectedMonthIdx, roads);
     });
   };
 
@@ -302,6 +515,32 @@ export default function SpatialMap() {
           <div className="px-3 py-1.5 rounded-xl bg-slate-900/90 backdrop-blur-md border border-cyan-500/30 text-xs font-semibold text-cyan-300 flex items-center gap-2 shadow-cyan-glow">
             <Globe className="w-4 h-4 text-cyan-400" />
             <span>OpenStreetMap Vector Engine • New Delhi</span>
+          </div>
+
+          {/* City Digital Twin Focus Switcher */}
+          <div className="flex items-center bg-slate-900/90 p-1 rounded-xl border border-cyan-500/30 text-xs font-mono">
+            <button
+              onClick={() => handleCitySwitch('Delhi')}
+              className={cn(
+                'px-3 py-1 rounded-lg transition-all font-bold flex items-center gap-1',
+                currentCity === 'Delhi'
+                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-cyan-glow'
+                  : 'text-slate-400 hover:text-slate-200'
+              )}
+            >
+              📍 Delhi (NDMC)
+            </button>
+            <button
+              onClick={() => handleCitySwitch('Pune')}
+              className={cn(
+                'px-3 py-1 rounded-lg transition-all font-bold flex items-center gap-1',
+                currentCity === 'Pune'
+                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-cyan-glow'
+                  : 'text-slate-400 hover:text-slate-200'
+              )}
+            >
+              📍 Pune (PMC)
+            </button>
           </div>
 
           {/* Map Style Selector Pills */}
