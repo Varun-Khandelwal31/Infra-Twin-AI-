@@ -9,11 +9,9 @@ import {
   Camera,
   Sun,
   Contrast,
-  Pencil,
-  Sparkles,
-  Eye,
   Flame,
-  Grid,
+  Activity,
+  Maximize2,
 } from 'lucide-react';
 import { InspectionData, InspectionImage } from '@/lib/mockInference';
 
@@ -26,7 +24,9 @@ export default function DroneOverlayViewer({ sample }: DroneOverlayViewerProps) 
   const [brightness, setBrightness] = useState(100);
   const [contrast, setContrast] = useState(100);
   const [showMask, setShowMask] = useState(true);
-  
+  const [isThermalHeatmap, setIsThermalHeatmap] = useState(false);
+  const [isScanning, setIsScanning] = useState(true);
+
   const gallery = sample.galleryImages && sample.galleryImages.length > 0 
     ? sample.galleryImages 
     : [
@@ -38,15 +38,18 @@ export default function DroneOverlayViewer({ sample }: DroneOverlayViewerProps) 
 
   const [selectedImage, setSelectedImage] = useState<InspectionImage>(gallery[0]);
 
-  // Sync selectedImage when sample changes
+  // Trigger scanline animation when sample or camera mode changes
   React.useEffect(() => {
     if (sample.galleryImages && sample.galleryImages.length > 0) {
       setSelectedImage(sample.galleryImages[0]);
     }
+    setIsScanning(true);
+    const timer = setTimeout(() => setIsScanning(false), 1200);
+    return () => clearTimeout(timer);
   }, [sample]);
 
   return (
-    <div className="relative w-full h-[390px] rounded-2xl overflow-hidden bg-[#0c111c] border border-cyan-500/25 shadow-glass group flex flex-col justify-between">
+    <div className="relative w-full h-[390px] rounded-2xl overflow-hidden bg-[#0c111c] border border-cyan-500/25 shadow-glass group flex flex-col justify-between select-none">
       {/* Top Overlay Header */}
       <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none">
         <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-950/85 backdrop-blur-md border border-cyan-500/30 text-xs font-semibold text-slate-200 pointer-events-auto">
@@ -57,8 +60,18 @@ export default function DroneOverlayViewer({ sample }: DroneOverlayViewerProps) 
           </span>
         </div>
 
-        <div className="px-3 py-1 rounded-full bg-slate-950/85 backdrop-blur-md border border-slate-800 text-xs font-mono text-cyan-400 pointer-events-auto">
-          {selectedImage.label}
+        <div className="flex items-center gap-2 pointer-events-auto">
+          <button
+            onClick={() => setIsThermalHeatmap(!isThermalHeatmap)}
+            className={`px-3 py-1 rounded-full text-xs font-mono font-bold border transition-all flex items-center gap-1.5 ${
+              isThermalHeatmap
+                ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 shadow-red-glow'
+                : 'bg-slate-950/85 text-slate-300 border-slate-800 hover:text-cyan-300'
+            }`}
+          >
+            <Flame className="w-3.5 h-3.5 text-rose-400" />
+            <span>Thermal Colormap Mode</span>
+          </button>
         </div>
       </div>
 
@@ -99,10 +112,11 @@ export default function DroneOverlayViewer({ sample }: DroneOverlayViewerProps) 
       {/* Right Floating Toolbar */}
       <div className="absolute top-16 right-4 z-20 flex flex-col gap-1.5 p-1.5 rounded-xl bg-slate-950/85 backdrop-blur-md border border-slate-800 text-slate-300">
         <button
+          onClick={() => setIsScanning(true)}
           className="p-2 rounded-lg hover:bg-slate-800 hover:text-cyan-400 transition-colors"
-          title="Capture Snapshot"
+          title="Trigger Laser Rescan"
         >
-          <Camera className="w-4 h-4" />
+          <Activity className="w-4 h-4" />
         </button>
         <button
           onClick={() => setBrightness((b) => (b === 100 ? 125 : 100))}
@@ -125,8 +139,8 @@ export default function DroneOverlayViewer({ sample }: DroneOverlayViewerProps) 
         className="w-full h-full relative transition-transform duration-300 ease-out overflow-hidden"
         style={{
           transform: `scale(${zoom})`,
-          filter: selectedImage.type === 'Thermal IR' 
-            ? `brightness(${brightness}%) contrast(${contrast + 40}%) hue-rotate(180deg) saturate(200%)`
+          filter: isThermalHeatmap
+            ? `brightness(${brightness + 10}%) contrast(${contrast + 50}%) hue-rotate(170deg) saturate(250%)`
             : `brightness(${brightness}%) contrast(${contrast}%)`,
         }}
       >
@@ -136,7 +150,23 @@ export default function DroneOverlayViewer({ sample }: DroneOverlayViewerProps) 
           className="w-full h-full object-cover"
         />
 
-        {/* Electric Cyan Segmentation Mask SVG Overlay */}
+        {/* Laser Radar Scanline Sweeping Effect */}
+        {isScanning && (
+          <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
+            <div className="w-full h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-cyan-glow animate-scanline" />
+          </div>
+        )}
+
+        {/* Thermal Colormap Legend Bar (Shown when thermal heatmap mode is active) */}
+        {isThermalHeatmap && (
+          <div className="absolute top-16 left-16 z-20 p-2 rounded-xl bg-slate-950/90 backdrop-blur-md border border-rose-500/40 text-[10px] font-mono text-slate-200 flex items-center gap-2">
+            <span>Thermal Colormap:</span>
+            <div className="w-24 h-2.5 rounded bg-gradient-to-r from-blue-600 via-cyan-400 via-yellow-400 to-rose-600 border border-slate-700" />
+            <span>Blue (0cm Edge) → Red ({sample.metrics.maxDepthCm}cm Core)</span>
+          </div>
+        )}
+
+        {/* Electric Cyan/Red Segmentation Mask SVG Overlay */}
         {showMask && (
           <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 600 450" preserveAspectRatio="none">
             <defs>
@@ -151,8 +181,8 @@ export default function DroneOverlayViewer({ sample }: DroneOverlayViewerProps) 
 
             <path
               d={sample.segmentationPath}
-              fill={selectedImage.type === 'Thermal IR' ? 'rgba(239, 68, 68, 0.25)' : 'rgba(0, 217, 255, 0.18)'}
-              stroke={selectedImage.type === 'Thermal IR' ? '#ef4444' : '#00d9ff'}
+              fill={isThermalHeatmap ? 'rgba(239, 68, 68, 0.35)' : 'rgba(0, 217, 255, 0.18)'}
+              stroke={isThermalHeatmap ? '#ef4444' : '#00d9ff'}
               strokeWidth="3.5"
               strokeDasharray="8, 4"
               filter="url(#cyanGlow)"

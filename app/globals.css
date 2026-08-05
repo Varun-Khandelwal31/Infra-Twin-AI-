@@ -25,3 +25,12 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 217, 255, 0.5);
 }
+
+@keyframes scanline {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(380px); }
+}
+
+.animate-scanline {
+  animation: scanline 1.2s ease-in-out infinite;
+}

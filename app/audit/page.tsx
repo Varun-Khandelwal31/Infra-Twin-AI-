@@ -135,18 +135,39 @@ function AuditContent() {
         </div>
       </div>
 
-      {/* Fake AI Processing Loader */}
+      {/* High-Tech Telemetry Terminal Scan Loader */}
       {isScanning && (
-        <div className="p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-between text-xs font-mono text-cyan-300 animate-pulse">
-          <div className="flex items-center gap-3">
-            <Cpu className="w-4 h-4 text-cyan-400 animate-spin" />
-            <span>Running YOLOv8 Segmentation & Monocular Depth Matrix... ({scanProgress}%)</span>
+        <div className="p-4 rounded-2xl bg-[#090d16]/95 border border-cyan-500/40 shadow-cyan-glow space-y-3 font-mono text-xs">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-cyan-400 font-bold">
+              <Cpu className="w-4 h-4 text-cyan-400 animate-spin" />
+              <span>PALANTIR AI VOLUMETRIC SCANNING ENGINE ({scanProgress}%)</span>
+            </div>
+            <span className="text-[10px] text-slate-400">yolov8n-seg.pt • depth-anything-small-hf</span>
           </div>
-          <div className="w-48 h-2 rounded-full bg-slate-800 overflow-hidden">
+
+          {/* Progress Bar */}
+          <div className="w-full h-2 rounded-full bg-slate-900 overflow-hidden border border-cyan-500/30">
             <div
-              className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-200"
+              className="h-full bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 transition-all duration-150 shadow-cyan-glow"
               style={{ width: `${scanProgress}%` }}
             />
+          </div>
+
+          {/* Real-Time Processing Log Terminal */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-[10px] text-slate-400 border-t border-slate-800/80 pt-2">
+            <div className="flex items-center gap-1.5 text-cyan-300">
+              <span>▶</span>
+              <span>[0.1s] Instance Mask: YOLOv8-Seg</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-emerald-300">
+              <span>▶</span>
+              <span>[0.4s] Depth Matrix: Depth Anything</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-yellow-300">
+              <span>▶</span>
+              <span>[0.8s] Volume: V = {selectedSample.metrics.volumeCum} m³</span>
+            </div>
           </div>
         </div>
       )}
