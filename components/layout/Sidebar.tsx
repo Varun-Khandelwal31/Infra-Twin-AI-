@@ -26,9 +26,15 @@ const NAV_ITEMS = [
   { label: 'Map View', href: '/map', icon: MapPin },
   { label: 'AI Inspection', href: '/audit', icon: ScanEye },
   { label: 'SLA Verification', href: '/sla-verification', icon: ShieldCheck },
-  { label: 'Contractor SLA', href: '/fraud-detection', icon: AlertTriangle },
+  { label: 'Contractor SLA', href: '/fraud-detection', icon: ShieldCheck },
   { label: 'Nirman Copilot', href: '/copilot', icon: Bot },
   { label: 'Predictive Maint.', href: '/predictive', icon: TrendingUp },
+  { label: 'Issues Feed', href: '/issues', icon: AlertTriangle },
+  { label: 'Work Orders', href: '/work-orders', icon: ClipboardList },
+  { label: 'Analytics', href: '/analytics', icon: BarChart3 },
+  { label: 'Assets', href: '/assets', icon: Layers },
+  { label: 'Team', href: '/team', icon: Users },
+  { label: 'Settings', href: '/settings', icon: Settings },
 ];
 
 export default function Sidebar() {
@@ -57,26 +63,26 @@ export default function Sidebar() {
             const isActive = pathname === item.href;
             const Icon = item.icon;
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all duration-200 group relative',
-                  isActive
-                    ? 'bg-gradient-to-r from-cyan-500/20 to-cyan-500/5 text-cyan-300 border border-cyan-500/40 shadow-cyan-glow'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
-                )}
-              >
-                <Icon
+              <Link key={item.href} href={item.href} className="block">
+                <div
                   className={cn(
-                    'w-4 h-4 transition-transform duration-200 group-hover:scale-110',
-                    isActive ? 'text-cyan-400' : 'text-slate-400 group-hover:text-slate-200'
+                    'flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all duration-200 group relative overflow-hidden',
+                    isActive
+                      ? 'bg-gradient-to-r from-cyan-500/25 via-cyan-500/10 to-transparent text-cyan-300 border border-cyan-500/40 shadow-[0_0_20px_rgba(0,217,255,0.2)]'
+                      : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
                   )}
-                />
-                <span>{item.label}</span>
-                {isActive && (
-                  <span className="absolute right-2 w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#00d9ff]" />
-                )}
+                >
+                  <Icon
+                    className={cn(
+                      'w-4 h-4 transition-transform duration-200 group-hover:scale-110 shrink-0',
+                      isActive ? 'text-cyan-400' : 'text-slate-400 group-hover:text-slate-200'
+                    )}
+                  />
+                  <span className="font-mono">{item.label}</span>
+                  {isActive && (
+                    <span className="absolute right-2.5 w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_10px_#00d9ff] animate-pulse" />
+                  )}
+                </div>
               </Link>
             );
           })}

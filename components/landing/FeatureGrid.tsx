@@ -12,6 +12,7 @@ import {
   TrendingUp,
   ArrowRight,
 } from 'lucide-react';
+import VengenceCard from '@/components/ui/VengenceCard';
 
 const FEATURES = [
   {
@@ -84,31 +85,30 @@ export default function FeatureGrid() {
               viewport={{ once: true }}
               transition={{ delay: idx * 0.08, duration: 0.5 }}
             >
-              <Link
-                href={feat.link}
-                className="group block p-6 rounded-2xl bg-[#111726]/80 backdrop-blur-xl border border-cyan-500/20 hover:border-cyan-500/50 hover:shadow-cyan-glow transition-all duration-300 h-full flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-5">
-                    <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
-                      <Icon className="w-6 h-6" />
+              <Link href={feat.link} className="block h-full">
+                <VengenceCard glowColor="cyan" className="p-6 h-full flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-5">
+                      <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+                        <Icon className="w-6 h-6" />
+                      </div>
+                      <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 font-semibold">
+                        {feat.badge}
+                      </span>
                     </div>
-                    <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 font-semibold">
-                      {feat.badge}
-                    </span>
+                    <h3 className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors font-display mb-2">
+                      {feat.title}
+                    </h3>
+                    <p className="text-slate-400 text-xs leading-relaxed">
+                      {feat.pitch}
+                    </p>
                   </div>
-                  <h3 className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors font-display mb-2">
-                    {feat.title}
-                  </h3>
-                  <p className="text-slate-400 text-xs leading-relaxed">
-                    {feat.pitch}
-                  </p>
-                </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center text-xs font-semibold text-cyan-400 group-hover:translate-x-1 transition-transform">
-                  <span>Explore Module</span>
-                  <ArrowRight className="w-4 h-4 ml-1.5" />
-                </div>
+                  <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center text-xs font-semibold text-cyan-400 group-hover:translate-x-1 transition-transform">
+                    <span>Explore Module</span>
+                    <ArrowRight className="w-4 h-4 ml-1.5" />
+                  </div>
+                </VengenceCard>
               </Link>
             </motion.div>
           );

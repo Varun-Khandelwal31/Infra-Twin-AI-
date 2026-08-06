@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import VengenceCard from '@/components/ui/VengenceCard';
 
 interface RoadHealthGaugeProps {
   score?: number; // 0 to 100
@@ -28,7 +29,7 @@ export default function RoadHealthGauge({ score = 74 }: RoadHealthGaugeProps) {
   }
 
   return (
-    <div className="p-6 rounded-2xl bg-[#111726]/90 backdrop-blur-xl border border-cyan-500/20 shadow-glass flex flex-col items-center justify-between h-full relative overflow-hidden">
+    <VengenceCard glowColor="cyan" className="p-6 flex flex-col items-center justify-between h-full relative overflow-hidden">
       <div className="w-full flex items-center justify-between mb-4">
         <div>
           <h3 className="text-sm font-bold text-white font-display">Citywide Road Health Index</h3>
@@ -74,6 +75,6 @@ export default function RoadHealthGauge({ score = 74 }: RoadHealthGaugeProps) {
         <div className="text-xs font-semibold text-slate-200">{statusText}</div>
         <p className="text-[11px] text-slate-400 mt-0.5">840 km scanned • 12 Active Drone Sorties</p>
       </div>
-    </div>
+    </VengenceCard>
   );
 }

@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Navigation, Battery, Radio, ArrowUpRight } from 'lucide-react';
+import VengenceCard from '@/components/ui/VengenceCard';
 
 const DRONES = [
   { id: 'DR-904', operator: 'Rajesh Kumar (Zone 1)', battery: '88%', status: 'Scanning CP Outer Circle', lat: 28.6315, lng: 77.2167 },
@@ -12,7 +13,7 @@ const DRONES = [
 
 export default function FleetMapWidget() {
   return (
-    <div className="p-6 rounded-2xl bg-[#111726]/90 backdrop-blur-xl border border-cyan-500/20 shadow-glass flex flex-col justify-between h-full">
+    <VengenceCard glowColor="cyan" className="p-6 flex flex-col justify-between h-full">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-sm font-bold text-white font-display">Active Drone Fleet Tracking</h3>
@@ -78,6 +79,6 @@ export default function FleetMapWidget() {
           </div>
         ))}
       </div>
-    </div>
+    </VengenceCard>
   );
 }

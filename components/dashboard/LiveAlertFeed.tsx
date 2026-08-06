@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { AlertTriangle, AlertCircle, Info, ExternalLink, Bot } from 'lucide-react';
+import VengenceCard from '@/components/ui/VengenceCard';
 
 const ALERTS = [
   {
@@ -49,7 +50,7 @@ const ALERTS = [
 
 export default function LiveAlertFeed() {
   return (
-    <div className="p-6 rounded-2xl bg-[#111726]/90 backdrop-blur-xl border border-cyan-500/20 shadow-glass flex flex-col h-full">
+    <VengenceCard glowColor="rose" className="p-6 flex flex-col h-full">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
@@ -121,6 +122,6 @@ export default function LiveAlertFeed() {
           );
         })}
       </div>
-    </div>
+    </VengenceCard>
   );
 }

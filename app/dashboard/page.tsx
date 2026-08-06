@@ -9,6 +9,7 @@ import LiveAlertFeed from '@/components/dashboard/LiveAlertFeed';
 import FleetMapWidget from '@/components/dashboard/FleetMapWidget';
 import { INSPECTION_SAMPLES } from '@/lib/mockInference';
 import { Route, AlertTriangle, ShieldCheck, Activity, Clock } from 'lucide-react';
+import VengenceCard from '@/components/ui/VengenceCard';
 
 function useAnimatedCounter(target: number, duration: number = 1800) {
   const [value, setValue] = useState(0);
@@ -109,9 +110,9 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Quick Metrics Bar — Live Animated */}
+          {/* Quick Metrics Bar — Vengeance UI Spotlight Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between card-3d-tilt">
+            <VengenceCard glowColor="cyan" className="p-4 flex items-center justify-between">
               <div>
                 <div className="text-[11px] font-mono text-slate-400">Total Audited Stretch</div>
                 <div className="text-2xl font-bold text-white font-display tabular-nums">
@@ -119,34 +120,34 @@ export default function DashboardPage() {
                 </div>
                 <div className="text-[10px] font-mono text-emerald-400 mt-0.5">+3 km/min live</div>
               </div>
-              <div className="w-9 h-9 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+              <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
                 <Route className="w-5 h-5" />
               </div>
-            </div>
+            </VengenceCard>
 
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between card-3d-tilt">
+            <VengenceCard glowColor="rose" className="p-4 flex items-center justify-between">
               <div>
                 <div className="text-[11px] font-mono text-slate-400">Active Potholes Detected</div>
                 <div className="text-2xl font-bold text-rose-400 font-display">{activePotholes} Critical</div>
                 <div className="text-[10px] font-mono text-slate-500 mt-0.5">{totalPotholes} total scanned</div>
               </div>
-              <div className="w-9 h-9 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400">
-                <AlertTriangle className="w-5 h-5" />
+              <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400">
+                <AlertTriangle className="w-5 h-5 animate-pulse" />
               </div>
-            </div>
+            </VengenceCard>
 
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between card-3d-tilt">
+            <VengenceCard glowColor="amber" className="p-4 flex items-center justify-between">
               <div>
                 <div className="text-[11px] font-mono text-slate-400">SLA Fraud Alerts</div>
                 <div className="text-2xl font-bold text-amber-400 font-display">3 Blocked</div>
                 <div className="text-[10px] font-mono text-amber-400/80 mt-0.5">₹26.2L frozen</div>
               </div>
-              <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+              <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
                 <ShieldCheck className="w-5 h-5" />
               </div>
-            </div>
+            </VengenceCard>
 
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between card-3d-tilt">
+            <VengenceCard glowColor="emerald" className="p-4 flex items-center justify-between">
               <div>
                 <div className="text-[11px] font-mono text-slate-400">Active AI Drone Sorties</div>
                 <div className="text-2xl font-bold text-emerald-400 font-display">{droneSorties} Flying</div>
@@ -155,10 +156,10 @@ export default function DashboardPage() {
                   Telemetry streaming
                 </div>
               </div>
-              <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
                 <Activity className="w-5 h-5" />
               </div>
-            </div>
+            </VengenceCard>
           </div>
 
           {/* Core Grid: Health Index + Financial Ticker */}

@@ -2,10 +2,11 @@
 
 import React from 'react';
 import { IndianRupee, TrendingUp, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import VengenceCard from '@/components/ui/VengenceCard';
 
 export default function FinancialTicker() {
   return (
-    <div className="p-6 rounded-2xl bg-gradient-to-br from-[#111726] to-[#0c1322] backdrop-blur-xl border border-cyan-500/20 shadow-glass flex flex-col justify-between h-full">
+    <VengenceCard glowColor="emerald" className="p-6 flex flex-col justify-between h-full">
       <div>
         <div className="flex items-center justify-between mb-3">
           <span className="text-xs uppercase font-mono font-bold text-cyan-400 tracking-wider">
@@ -45,6 +46,6 @@ export default function FinancialTicker() {
           <span className="font-mono font-bold text-emerald-400">₹22.3 Lakhs</span>
         </div>
       </div>
-    </div>
+    </VengenceCard>
   );
 }
