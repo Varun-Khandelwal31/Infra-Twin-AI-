@@ -26,15 +26,9 @@ const NAV_ITEMS = [
   { label: 'Map View', href: '/map', icon: MapPin },
   { label: 'AI Inspection', href: '/audit', icon: ScanEye },
   { label: 'SLA Verification', href: '/sla-verification', icon: ShieldCheck },
-  { label: 'Contractor SLA', href: '/fraud-detection', icon: ShieldCheck },
+  { label: 'Contractor SLA', href: '/fraud-detection', icon: AlertTriangle },
   { label: 'Nirman Copilot', href: '/copilot', icon: Bot },
   { label: 'Predictive Maint.', href: '/predictive', icon: TrendingUp },
-  { label: 'Issues Feed', href: '/dashboard#issues', icon: AlertTriangle },
-  { label: 'Work Orders', href: '/dashboard#work-orders', icon: ClipboardList },
-  { label: 'Analytics', href: '/dashboard#analytics', icon: BarChart3 },
-  { label: 'Assets', href: '/dashboard#assets', icon: Layers },
-  { label: 'Team', href: '/dashboard#team', icon: Users },
-  { label: 'Settings', href: '/dashboard#settings', icon: Settings },
 ];
 
 export default function Sidebar() {

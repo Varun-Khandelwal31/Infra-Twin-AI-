@@ -7,7 +7,7 @@ import Navbar from '@/components/layout/Navbar';
 import BOQResultCard from '@/components/copilot/BOQResultCard';
 import { INSPECTION_SAMPLES } from '@/lib/mockInference';
 import { BOQResponse } from '@/lib/groq';
-import { Bot, Mic, Send, Cpu, X, Sparkles } from 'lucide-react';
+import { Bot, Mic, Send, Cpu, X, Sparkles, AlertTriangle, RefreshCw } from 'lucide-react';
 
 function CopilotContent() {
   const searchParams = useSearchParams();
@@ -22,12 +22,14 @@ function CopilotContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [boqData, setBoqData] = useState<BOQResponse | null>(null);
   const [isListening, setIsListening] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleGenerate = async (queryText?: string) => {
     const text = queryText !== undefined ? queryText : promptInput;
     if (!text.trim()) return;
 
     setIsLoading(true);
+    setError(null);
     try {
       const res = await fetch('/api/copilot', {
         method: 'POST',
@@ -38,12 +40,16 @@ function CopilotContent() {
         }),
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        setBoqData(data);
+      if (!res.ok) {
+        const errBody = await res.text().catch(() => '');
+        throw new Error(`API returned ${res.status}: ${errBody || 'Failed to generate BOQ'}`);
       }
-    } catch (err) {
-      console.error(err);
+
+      const data = await res.json();
+      setBoqData(data);
+    } catch (err: any) {
+      console.error('Copilot API Error:', err);
+      setError(err?.message || 'Failed to connect to Nirman Copilot engine. Check your Groq API key.');
     } finally {
       setIsLoading(false);
     }
@@ -204,6 +210,29 @@ function CopilotContent() {
             Synthesizing IRC:82-2023 Bill of Quantities...
           </div>
           <p className="text-xs text-slate-400">Querying RAG vectors & running Llama-3 70B model</p>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && !isLoading && (
+        <div className="p-5 rounded-2xl bg-rose-950/40 border border-rose-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="p-2 rounded-lg bg-rose-500/20 text-rose-400 border border-rose-500/40 shrink-0">
+              <AlertTriangle className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="text-sm font-bold text-rose-300 font-display">Copilot Engine Error</div>
+              <p className="text-xs text-rose-200/80 mt-0.5 font-mono">{error}</p>
+              <p className="text-[10px] text-slate-400 mt-1">Ensure GROQ_API_KEY is set in .env.local. The fallback simulation engine was used for the response below.</p>
+            </div>
+          </div>
+          <button
+            onClick={() => handleGenerate()}
+            className="px-4 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 text-xs font-bold flex items-center gap-2 transition-colors shrink-0"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span>Retry</span>
+          </button>
         </div>
       )}
 
