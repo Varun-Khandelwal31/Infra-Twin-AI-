@@ -58,61 +58,92 @@ export default function Navbar() {
   }
 
   return (
-    <header className="h-14 bg-[#0a0e17]/90 backdrop-blur-md border-b border-cyan-500/15 px-6 flex items-center justify-between shrink-0 z-20">
-      {/* Left Pill Navigation matching reference image 1 */}
+    <header className="h-14 bg-[#0a0e17]/90 backdrop-blur-md border-b border-cyan-500/20 px-6 flex items-center justify-between shrink-0 z-20 vengence-glass-dock">
+      {/* Left Pill Navigation */}
       <div className="flex items-center gap-2">
-        <div className="flex items-center bg-slate-900/80 p-1 rounded-lg border border-slate-800 text-xs">
-          <button className="px-3 py-1 rounded-md text-slate-400 hover:text-white transition-colors">
-            Road Inspection
-          </button>
-          <button className="px-3 py-1 rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-medium shadow-cyan-glow">
-            AI Analysis
-          </button>
-          <button className="px-3 py-1 rounded-md text-slate-400 hover:text-white transition-colors">
-            Inspection History
-          </button>
-          <button className="px-3 py-1 rounded-md text-slate-400 hover:text-white transition-colors">
-            Reports
-          </button>
+        <div className="flex items-center bg-slate-900/90 p-1 rounded-xl border border-cyan-500/30 text-xs font-mono">
+          <Link
+            href="/audit"
+            className={cn(
+              'px-3 py-1 rounded-lg transition-all font-medium',
+              pathname === '/audit' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-cyan-glow' : 'text-slate-400 hover:text-white'
+            )}
+          >
+            AI Audit Studio
+          </Link>
+          <Link
+            href="/map"
+            className={cn(
+              'px-3 py-1 rounded-lg transition-all font-medium',
+              pathname === '/map' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-cyan-glow' : 'text-slate-400 hover:text-white'
+            )}
+          >
+            Digital Twin
+          </Link>
+          <Link
+            href="/sla-verification"
+            className={cn(
+              'px-3 py-1 rounded-lg transition-all font-medium',
+              pathname === '/sla-verification' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-cyan-glow' : 'text-slate-400 hover:text-white'
+            )}
+          >
+            SLA Scan
+          </Link>
+          <Link
+            href="/copilot"
+            className={cn(
+              'px-3 py-1 rounded-lg transition-all font-medium',
+              pathname === '/copilot' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-cyan-glow' : 'text-slate-400 hover:text-white'
+            )}
+          >
+            Nirman Copilot
+          </Link>
         </div>
       </div>
 
       {/* Right Toolbar */}
       <div className="flex items-center gap-4 text-xs">
-        {/* Search */}
-        <div className="relative hidden lg:block">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-500" />
-          <input
-            type="text"
-            placeholder="Search road ID, ward, inspection..."
-            className="pl-8 pr-3 py-1.5 rounded-lg bg-slate-900/90 border border-slate-800 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 w-56 text-xs transition-all"
-          />
+        {/* Search Command Trigger (Vengeance UI style) */}
+        <div className="relative hidden sm:flex items-center">
+          <button className="flex items-center justify-between w-56 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-slate-400 hover:border-cyan-500/40 hover:text-slate-200 transition-all font-sans text-xs">
+            <span className="flex items-center gap-2 truncate">
+              <Search className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <span>Search telemetry...</span>
+            </span>
+            <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] font-mono text-cyan-300 border border-slate-700">
+              ⌘ K
+            </kbd>
+          </button>
         </div>
 
         {/* Date Stamp */}
-        <div className="hidden sm:flex items-center gap-1.5 text-slate-400 font-mono text-[11px]">
+        <div className="hidden lg:flex items-center gap-1.5 text-slate-400 font-mono text-[11px]">
           <Calendar className="w-3.5 h-3.5 text-cyan-400" />
-          <span>May 27, 2025 10:45 AM</span>
+          <span>New Delhi Smart Zone</span>
         </div>
 
         {/* Action Buttons */}
-        <button className="p-2 rounded-lg bg-slate-900/80 border border-slate-800 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/30 transition-colors">
+        <button
+          className="p-2 rounded-xl bg-slate-900/80 border border-slate-800 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/30 transition-colors"
+          title="Download Report"
+        >
           <Download className="w-4 h-4" />
         </button>
 
-        <button className="p-2 rounded-lg bg-slate-900/80 border border-slate-800 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/30 transition-colors relative">
+        <button
+          className="p-2 rounded-xl bg-slate-900/80 border border-slate-800 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/30 transition-colors relative"
+          title="System Notifications"
+        >
           <Bell className="w-4 h-4" />
           <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
           <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-cyan-400" />
         </button>
 
-        <button className="p-2 rounded-lg bg-slate-900/80 border border-slate-800 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/30 transition-colors">
-          <Sliders className="w-4 h-4" />
-        </button>
-
-        <button className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-500/20 to-blue-600/20 text-cyan-300 border border-cyan-500/40 hover:shadow-cyan-glow transition-all flex items-center gap-1.5 font-medium">
+        <button
+          className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500/20 to-blue-600/20 text-cyan-300 border border-cyan-500/40 hover:shadow-cyan-glow transition-all flex items-center gap-1.5 font-mono text-xs font-bold"
+        >
           <Share2 className="w-3.5 h-3.5" />
-          <span>Share Report</span>
+          <span>Share Audit</span>
         </button>
       </div>
     </header>
