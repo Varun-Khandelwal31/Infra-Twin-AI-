@@ -142,6 +142,8 @@ export default function SettingsPage() {
                   className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-500"
                 >
                   <option value="llama-3.3-70b-versatile">Llama-3.3-70b-versatile (Recommended)</option>
+                  <option value="codellama-70b-instruct">Code Llama 70B Instruct (Code Meta AI - High Precision)</option>
+                  <option value="codellama-34b-instruct">Code Llama 34B Instruct (Code Meta AI)</option>
                   <option value="llama-3.1-8b-instant">Llama-3.1-8b-instant (Fast Speed)</option>
                   <option value="mixtral-8x7b-32768">Mixtral-8x7b-32768 (MoE Architecture)</option>
                 </select>

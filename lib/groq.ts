@@ -19,14 +19,20 @@ export interface BOQResponse {
   ircCitations: string[];
   executionTimeDays: number;
   source?: 'live' | 'simulated';
+  metaCodeAiModel?: string;
 }
 
-export async function generateBOQWithLlama(prompt: string, inspectionContext?: any): Promise<BOQResponse> {
+export async function generateBOQWithLlama(
+  prompt: string,
+  inspectionContext?: any,
+  selectedModel: string = 'llama-3.3-70b-versatile'
+): Promise<BOQResponse> {
   const apiKey = process.env.GROQ_API_KEY || process.env.NEXT_PUBLIC_GROQ_API_KEY;
   const ircContext = retrieveIRCContext(prompt + ' ' + (inspectionContext?.distressType || 'pothole'));
 
   if (apiKey) {
     try {
+      const isCodeMetaAi = selectedModel.includes('codellama');
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -34,11 +40,27 @@ export async function generateBOQWithLlama(prompt: string, inspectionContext?: a
           'Authorization': `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
+          model: selectedModel,
           messages: [
             {
               role: 'system',
-              content: `You are Nirman Copilot, an AI Road Infrastructure Engineer trained on Indian Road Congress (IRC) standards.
+              content: isCodeMetaAi
+                ? `You are Code Meta AI (Code Llama Specialist) assigned to Nirman Copilot. Synthesize zero-syntax-error structured JSON Bill of Quantities matching this exact schema:
+{
+  "summary": "string explaining technical rationale",
+  "distressAreaSqm": number,
+  "depthCm": number,
+  "materials": [{"item": "string", "quantity": "string", "unit": "string", "rateINR": number, "totalINR": number}],
+  "laborAndEquipment": [{"item": "string", "quantity": "string", "unit": "string", "rateINR": number, "totalINR": number}],
+  "totalCostINR": number,
+  "estimatedCO2Kg": number,
+  "ircCitations": ["string"],
+  "executionTimeDays": number
+}
+
+IRC Compliance Grounding:
+${ircContext}`
+                : `You are Nirman Copilot, an AI Road Infrastructure Engineer trained on Indian Road Congress (IRC) standards.
 Always generate a JSON object matching this schema:
 {
   "summary": "string explaining technical rationale",
@@ -71,6 +93,7 @@ ${ircContext}`,
         if (content) {
           const parsed = JSON.parse(content) as BOQResponse;
           parsed.source = 'live';
+          parsed.metaCodeAiModel = selectedModel;
           return parsed;
         }
       }
@@ -126,5 +149,6 @@ ${ircContext}`,
     ],
     executionTimeDays: 1,
     source: 'simulated',
+    metaCodeAiModel: selectedModel,
   };
 }
