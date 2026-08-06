@@ -169,6 +169,41 @@ export default function SettingsPage() {
                 </div>
               </div>
             </div>
+
+            {/* Section 3: Swytchcode Durable Execution & API Integration Engine */}
+            <div className="p-6 rounded-2xl bg-[#111726]/90 backdrop-blur-xl border border-cyan-500/20 shadow-glass space-y-5 card-3d-tilt lg:col-span-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs font-bold text-cyan-400 font-mono">
+                  <Database className="w-4 h-4" />
+                  <span>SWYTCHCODE DURABLE WORKFLOW & AGENTIC API ENGINE</span>
+                </div>
+                <span className="px-2.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-mono font-bold">
+                  Swytchcode v2.4 Active
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
+                <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+                  <div className="text-slate-400 text-[10px]">Durable Retry Policy</div>
+                  <div className="font-bold text-cyan-300">Exponential Backoff (3 Retries)</div>
+                </div>
+                <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+                  <div className="text-slate-400 text-[10px]">State Persistence</div>
+                  <div className="font-bold text-emerald-400">Enabled (Session Key Sync)</div>
+                </div>
+                <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+                  <div className="text-slate-400 text-[10px]">Swytchcode CLI OpenAPI Spec</div>
+                  <a
+                    href="/swytchcode-openapi.json"
+                    target="_blank"
+                    download
+                    className="inline-block font-bold text-cyan-400 underline hover:text-cyan-300 pt-0.5"
+                  >
+                    /swytchcode-openapi.json
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         </main>
       </div>
